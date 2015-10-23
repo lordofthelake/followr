@@ -1,3 +1,10 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h1>Trending Hashtags</h1>
+    <p><%= @trending.html_safe %></p>
+  </div>
+</div>
+
 <% if current_user.twitter_check? %>
     <% if @followed_users_count > 0 %>
 
@@ -15,6 +22,7 @@
             ] %>
           </div>
         </div>
+
     <% else %>
         <div class="alert alert-info" role="alert">
             <h4>Looking good!</h4>

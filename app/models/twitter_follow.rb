@@ -22,4 +22,14 @@ class TwitterFollow < ActiveRecord::Base
 		client.unmute(username)
 	    update_attributes!({ unfollowed: true, unfollowed_at: DateTime.now })
 	end
+
+  def self.get_trending_hashtags(user_id)
+    unless Rails.cache.read('twitter_trending_hashtags').present?
+      user = User.find user_id
+      client = user.credential.twitter_client
+      trending = client.trends.map(&:name)
+      Rails.cache.write('twitter_trending_hashtags', trending, expires_in: 24.hours)
+    end
+    return Rails.cache.read('twitter_trending_hashtags')
+  end
 end

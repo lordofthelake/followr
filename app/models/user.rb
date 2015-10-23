@@ -36,7 +36,7 @@ class User < ActiveRecord::Base
     hashtags = follow_prefs.hashtags.gsub('#','').split(',')
 
     client = self.credential.twitter_client rescue nil
-    return false if client.nil? || hashtags.empty? || (!follow_prefs.want_mass_follow? && !follow_prefs.mass_unfollow) || !self.credential.is_valid?
+    return false if client.nil? || hashtags.empty? || (!follow_prefs.want_mass_follow? && !follow_prefs.mass_unfollow)
     true
   end
 
