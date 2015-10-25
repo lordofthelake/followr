@@ -3,14 +3,20 @@ class CredentialsController < ApplicationController
   protect_from_forgery except: :create
   
   def create
-    twitter_consumer_key = params[:twitter_consumer_key]
-    twitter_consumer_secret = params[:twitter_consumer_secret]
-    twitter_oauth_token = params[:twitter_oauth_token]
-    twitter_oauth_token_secret = params[:twitter_oauth_token_secret]
-    user = User.find_by_twitter_uid(params[:auth]["uid"])
-    
+    if params[:twitter_consumer_key]
+      twitter_consumer_key = params[:twitter_consumer_key]
+      twitter_consumer_secret = params[:twitter_consumer_secret]
+      twitter_oauth_token = params[:twitter_oauth_token]
+      twitter_oauth_token_secret = params[:twitter_oauth_token_secret]
+      user = User.find_by_twitter_uid(params[:auth]["uid"])
+    else
+      auth = request.env["omniauth.auth"]
+      user = User.find_by_twitter_uid(auth["uid"])
+    end
+
     unless user
-      user = User.create_with_omniauth(params[:auth])
+      user = User.create_with_omniauth(params[:auth]) if params[:twitter_consumer_key]
+      user = User.create_with_omniauth(auth) unless user
     end
 
     credential = Credential.create_with_omniauth(user, params)

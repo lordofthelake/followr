@@ -20,15 +20,25 @@ class Credential < ActiveRecord::Base
   MAX_TWITTER_APPS = 4 # allow user to have multiple credentials tied to different twitter applications
 
   def self.create_with_omniauth(user, params)
-    cr = Credential.select { |c| c.twitter_oauth_token == params[:twitter_oauth_token] }.first rescue nil
-    cr = Credential.new if cr.nil?
-    cr.user = user
-    cr.twitter_consumer_key = params[:twitter_consumer_key]
-    cr.twitter_consumer_secret = params[:twitter_consumer_secret]
-    cr.twitter_oauth_token = params[:twitter_oauth_token]
-    cr.twitter_oauth_token_secret = params[:twitter_oauth_token_secret]
-    cr.app_id = params[:followr_app_id]
-    cr.save! if cr.changed? || cr.new_record?
+    if params[:twitter_oauth_token]
+      cr = Credential.select { |c| c.twitter_oauth_token == params[:twitter_oauth_token] }.first rescue nil
+      cr = Credential.new if cr.nil?
+      cr.user ||= user
+      cr.twitter_consumer_key = params[:twitter_consumer_key]
+      cr.twitter_consumer_secret = params[:twitter_consumer_secret]
+      cr.twitter_oauth_token = params[:twitter_oauth_token]
+      cr.twitter_oauth_token_secret = params[:twitter_oauth_token_secret]
+      cr.app_id = params[:followr_app_id]
+    else
+      twitter_oauth_token = params[:auth]["extra"]["access_token"].params[:oauth_token]
+      twitter_oauth_token_secret = params[:auth]["extra"]["access_token"].params[:oauth_token_secret]
+      cr = Credential.select { |c| c.twitter_oauth_token == twitter_oauth_token }.first rescue nil
+      cr = Credential.new unless cr
+      cr.user ||= user
+      cr.twitter_oauth_token = twitter_oauth_token
+      cr.twitter_oauth_token_secret = twitter_oauth_token_secret
+    end
+    cr.save! if cr.changed?
     cr
   end
 
@@ -37,8 +47,8 @@ class Credential < ActiveRecord::Base
     valid_client = nil
     begin
       client = Twitter::REST::Client.new do |c|
-        c.consumer_key        = twitter_consumer_key
-        c.consumer_secret     = twitter_consumer_secret
+        c.consumer_key        = twitter_consumer_key.present? ? twitter_consumer_key : ENV['TWITTER_CONSUMER_KEY']
+        c.consumer_secret     = twitter_consumer_secret ? twitter_consumer_secret : ENV['TWITTER_CONSUMER_SECRET']
         c.access_token        = twitter_oauth_token
         c.access_token_secret = twitter_oauth_token_secret
       end

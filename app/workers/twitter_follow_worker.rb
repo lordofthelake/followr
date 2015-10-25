@@ -2,7 +2,7 @@ class TwitterFollowWorker
   include Sidekiq::Worker
   include Sidetiq::Schedulable
 
-  recurrence { hourly.minute_of_hour(15, 30, 55) }
+  recurrence { hourly.minute_of_hour(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55) }
 
   def perform
     unless ENV['WORKERS_DRY_RUN'].blank?
@@ -15,15 +15,15 @@ class TwitterFollowWorker
         begin
           follow_prefs = user.twitter_follow_preference
           hashtags = follow_prefs.hashtags.gsub('#','').gsub(' ','').split(',').shuffle
-          credential = user.credential
-
+          credential = user.credential.valid_for_follow.sample
+          next unless credential
           client = credential.twitter_client rescue nil
           next if client.nil? 
-          
+
+          next if !user.twitter_check? || user.rate_limited? || !user.can_twitter_follow?
+
           # Keep track of # of followers user has hourly
           Follower.compose(user) if Follower.can_compose_for?(user)
-
-          next if !user.twitter_check? || user.rate_limited? || !user.can_twitter_follow?          # usernames = []
 
           hashtags.each do |hashtag|
             tweets = client.search("##{hashtag}").collect.take(rand(20..300))
@@ -41,7 +41,6 @@ class TwitterFollowWorker
               # don't show their tweets in the feed
               muted = client.mute(username)
 
-
               followed = client.follow(username)
               TwitterFollow.follow(user, username, hashtag, twitter_user_id) if followed
             end
@@ -52,13 +51,10 @@ class TwitterFollowWorker
           credential.rate_limit_until = DateTime.now + sleep_time.minutes
           credential.save!
         rescue Twitter::Error::Forbidden => e
-          user.credential.update_attributes(is_valid: false)
+          credential.update_attributes(is_valid: false)
         rescue Twitter::Error::Unauthorized => e
-          # follow_prefs.update_attributes(mass_follow: false, mass_unfollow: false)
-          user.credential.update_attributes(is_valid: false)
+          credential.update_attributes(is_valid: false)
           puts "#{user.twitter_username} || #{e}"
-        rescue => e
-          Airbrake.notify(e)
         end
       end
     end

@@ -24,12 +24,16 @@ class TwitterFollow < ActiveRecord::Base
 	end
 
   def self.get_trending_hashtags(user_id)
-    unless Rails.cache.read('twitter_trending_hashtags').present?
-      user = User.find user_id
-      client = user.credential.twitter_client
-      trending = client.trends.map(&:name)
-      Rails.cache.write('twitter_trending_hashtags', trending, expires_in: 24.hours)
+    begin
+      unless Rails.cache.read('twitter_trending_hashtags').present?
+        user = User.find user_id
+        client = user.credential.valid.first.twitter_client
+        trending = client.trends.map(&:name)
+        Rails.cache.write('twitter_trending_hashtags', trending, expires_in: 24.hours)
+      end
+      return Rails.cache.read('twitter_trending_hashtags')
+    rescue => e
+      Airbrake.notify(e)
     end
-    return Rails.cache.read('twitter_trending_hashtags')
   end
 end
