@@ -17,7 +17,6 @@ class User < ActiveRecord::Base
       user.twitter_uid = auth["uid"]
       user.twitter_username = auth["info"]['nickname']
       user.name = auth["info"]["name"]
-      Credential.create_with_omniauth(user, auth)
     end
   end
 
@@ -34,13 +33,13 @@ class User < ActiveRecord::Base
     follow_prefs = self.twitter_follow_preference
     hashtags = follow_prefs.hashtags.gsub('#','').split(',')
 
-    client = self.credential.twitter_client rescue nil
+    client = credential.valid_for_follow.first.twitter_client rescue nil
     return false if client.nil? || hashtags.empty? || (!follow_prefs.want_mass_follow? && !follow_prefs.mass_unfollow) || !self.credential.is_valid
     true
   end
 
   def can_twitter_follow?
-    return false if credential.valid.empty? || rate_limited?
+    return false if credential.valid_for_follow.empty? || rate_limited?
     true
   end
 

@@ -20,7 +20,6 @@ class PagesController < ApplicationController
     @followed_users_count = current_user.twitter_follows.count
     @began_following_users = current_user.began_following_users
 
-    client = current_user.credential.twitter_client
     if !Rails.cache.read('twitter_trending_hashtags').present?
       Rails.cache.write('twitter_trending_hashtags', TwitterFollow.get_trending_hashtags(current_user.id))
     end

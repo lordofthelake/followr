@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151025020605) do
+ActiveRecord::Schema.define(version: 20151025055142) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,9 @@ ActiveRecord::Schema.define(version: 20151025020605) do
     t.boolean  "is_valid",                             default: true
     t.string   "encrypted_instagram_token"
     t.datetime "rate_limit_until"
+    t.integer  "app_id"
+    t.string   "encrypted_twitter_consumer_key"
+    t.string   "encrypted_twitter_consumer_secret"
   end
 
   create_table "followers", force: :cascade do |t|

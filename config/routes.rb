@@ -28,10 +28,9 @@ Rails.application.routes.draw do
 
 
   # Twitter
-  get "/auth/:provider/callback" => "sessions#create"
+  get "/auth/:provider/callback" => "credentials#create"
+  post '/twitter/:id/callback' => 'credentials#create'
   get '/auth/failure' => 'pages#index'
 
-  
-  
 
 end
