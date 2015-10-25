@@ -15,8 +15,9 @@ class TwitterFollowWorker
         begin
           follow_prefs = user.twitter_follow_preference
           hashtags = follow_prefs.hashtags.gsub('#','').gsub(' ','').split(',').shuffle
+          credential = user.credential
 
-          client = user.credential.twitter_client rescue nil
+          client = credential.twitter_client rescue nil
           next if client.nil? 
           
           # Keep track of # of followers user has hourly
@@ -36,22 +37,22 @@ class TwitterFollowWorker
               next if entry.present?
 
               client.friendship_update(username, { :wants_retweets => false })
-              muted = client.mute(username) # don't show their tweets in our feed
-              followed = client.follow(username)
 
+              # don't show their tweets in the feed
+              muted = client.mute(username)
+
+
+              followed = client.follow(username)
               TwitterFollow.follow(user, username, hashtag, twitter_user_id) if followed
             end
           end
         rescue Twitter::Error::TooManyRequests => e
           # rate limited - set rate_limit_until timestamp
           sleep_time = (e.rate_limit.reset_in + 1.minute)/60 rescue 16
-          follow_prefs.rate_limit_until = DateTime.now + sleep_time.minutes
-          follow_prefs.save
+          credential.rate_limit_until = DateTime.now + sleep_time.minutes
+          credential.save!
         rescue Twitter::Error::Forbidden => e
-          if e.message.index('Application cannot perform write actions')
-            Airbrake.notify(e)
-            user.credential.update_attributes(is_valid: false)
-          end
+          user.credential.update_attributes(is_valid: false)
         rescue Twitter::Error::Unauthorized => e
           # follow_prefs.update_attributes(mass_follow: false, mass_unfollow: false)
           user.credential.update_attributes(is_valid: false)

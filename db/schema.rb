@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150625022254) do
+ActiveRecord::Schema.define(version: 20151025020605) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,8 @@ ActiveRecord::Schema.define(version: 20150625022254) do
     t.string   "encrypted_twitter_oauth_token"
     t.string   "encrypted_twitter_oauth_token_secret"
     t.boolean  "is_valid",                             default: true
+    t.string   "encrypted_instagram_token"
+    t.datetime "rate_limit_until"
   end
 
   create_table "followers", force: :cascade do |t|
@@ -53,14 +55,13 @@ ActiveRecord::Schema.define(version: 20150625022254) do
   end
 
   create_table "twitter_follow_preferences", force: :cascade do |t|
-    t.integer  "unfollow_after",   default: 1
-    t.text     "hashtags",         default: ""
+    t.integer  "unfollow_after", default: 1
+    t.text     "hashtags",       default: ""
     t.integer  "user_id"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.datetime "rate_limit_until"
-    t.boolean  "mass_follow",      default: true
-    t.boolean  "mass_unfollow",    default: true
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.boolean  "mass_follow",    default: true
+    t.boolean  "mass_unfollow",  default: true
   end
 
   create_table "twitter_follows", force: :cascade do |t|
@@ -80,11 +81,13 @@ ActiveRecord::Schema.define(version: 20150625022254) do
 
   create_table "users", force: :cascade do |t|
     t.string   "email"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.string   "twitter_uid"
     t.string   "name"
     t.string   "twitter_username"
+    t.string   "instagram_uid"
+    t.string   "instagram_username"
   end
 
 end

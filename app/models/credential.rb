@@ -5,6 +5,9 @@ class Credential < ActiveRecord::Base
   attr_encrypted :twitter_oauth_token, :key => ENV['APPLICATION_SECRET_KEY']
   attr_encrypted :twitter_oauth_token_secret, :key => ENV['APPLICATION_SECRET_KEY']
 
+  scope :valid, -> { where('is_valid IS TRUE') }
+  scope :valid_for_follow, -> { valid.where('rate_limit_until IS NULL OR rate_limit_until < ?', DateTime.now) }
+
   def self.create_with_omniauth(user, auth)
     c = Credential.new
     c.user = user
@@ -25,5 +28,5 @@ class Credential < ActiveRecord::Base
 
     return client
 	end
-
+  
 end

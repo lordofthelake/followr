@@ -4,12 +4,11 @@ class User < ActiveRecord::Base
   has_many :twitter_follows
   has_many :followers
 
-  has_one :credential, dependent: :destroy
+  has_many :credential, dependent: :destroy
   has_one :twitter_follow_preference, dependent: :destroy
 
   scope :wants_twitter_follow, -> { joins('INNER JOIN twitter_follow_preferences ON (users.id = user_id)').where('twitter_follow_preferences.mass_follow IS TRUE') }
   scope :wants_twitter_unfollow, -> { joins('INNER JOIN twitter_follow_preferences ON (users.id = user_id)').where('twitter_follow_preferences.mass_unfollow IS TRUE') }
-  # scope :reauthentication_notification
 
   after_create :init_follow_prefs
 
@@ -27,7 +26,7 @@ class User < ActiveRecord::Base
   end
 
   def rate_limited?
-    twitter_follow_preference.rate_limited?
+    credential.valid_for_follow.empty?
   end
 
   # true if all is good to start following
@@ -41,14 +40,7 @@ class User < ActiveRecord::Base
   end
 
   def can_twitter_follow?
-    return false unless self.credential.is_valid
-    return false if twitter_follow_preference.rate_limit_until > DateTime.now
-
-
-    # Disable due to twitter continuously blocking the app regardless of this
-    # followed_in_last_hour = self.twitter_follows.where('followed_at > ?', 1.hour.ago)
-    # followed_in_last_day = self.twitter_follows.where('followed_at > ?', 24.hours.ago)
-    # return false if followed_in_last_hour.count >= 30 || followed_in_last_day.count >= 720
+    return false if credential.valid.empty? || rate_limited?
     true
   end
 
