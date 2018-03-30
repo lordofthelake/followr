@@ -4,20 +4,20 @@ source 'https://rubygems.org'
 
 ruby '~> 2.3'
 
-gem 'rails', '~> 4.2.0'
+gem 'rails', '~> 5.0'
 gem 'sinatra', require: false
 
 # Assets
-gem 'bootstrap-sass', '~> 3.3.4'
-gem 'coffee-rails', '~> 4.1.0'
+gem 'bootstrap-sass'
+gem 'coffee-rails'
 gem 'jquery-rails'
 gem 'mini_racer'
-gem 'sass-rails', '~> 4.0.3'
+gem 'sass-rails'
 gem 'turbolinks'
-gem 'uglifier', '>= 1.3.0'
+gem 'uglifier'
 
 # Servers
-gem 'pg', '~> 0.18'
+gem 'pg'
 gem 'puma'
 gem 'rails_12factor', group: :production
 gem 'redis'
