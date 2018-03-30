@@ -32,7 +32,7 @@ gem 'omniauth-twitter'
 gem 'twitter'
 
 # Admin
-gem 'activeadmin', '~> 1.0.0'
+gem 'activeadmin', '~> 1.0'
 gem 'devise'
 
 # Monitoring
