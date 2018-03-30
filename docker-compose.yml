@@ -10,6 +10,8 @@ services:
     volumes:
        - .:/usr/src/app
     command: rails server -b 0.0.0.0
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgres://postgres@db
       REDIS_URL: redis://redis

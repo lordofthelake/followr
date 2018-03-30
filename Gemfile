@@ -33,6 +33,9 @@ gem 'omniauth-twitter'
 gem 'activeadmin', '~> 1.0.0'
 gem 'devise'
 
+# Monitoring
+gem "sentry-raven"
+
 # Charting
 gem 'groupdate'
 gem 'chartkick'
