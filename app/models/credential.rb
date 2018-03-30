@@ -2,9 +2,6 @@ class Credential < ActiveRecord::Base
 	belongs_to :user
 	validates_presence_of :user
 
-  attr_encrypted :twitter_oauth_token, :key => ENV['APPLICATION_SECRET_KEY']
-  attr_encrypted :twitter_oauth_token_secret, :key => ENV['APPLICATION_SECRET_KEY']
-
   def self.create_with_omniauth(user, auth)
     c = Credential.new
     c.user = user

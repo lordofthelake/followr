@@ -15,7 +15,7 @@ gem 'turbolinks'
 
 # Servers
 gem 'unicorn'
-gem 'pg'
+gem 'pg', '~>0.18'
 gem 'redis'
 gem 'rails_12factor', group: :production
 
@@ -28,7 +28,6 @@ gem 'twitter'
 gem 'omniauth'
 gem 'omniauth-twitter'
 
-gem 'attr_encrypted'
 gem 'draper', '~> 1.3'
 
 # Admin
