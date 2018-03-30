@@ -7,3 +7,5 @@ COPY Gemfile Gemfile.lock /usr/src/app/
 RUN bundle install
 
 COPY . /usr/src/app
+
+EXPOSE "3000"

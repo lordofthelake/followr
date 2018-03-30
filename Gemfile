@@ -15,8 +15,8 @@ gem 'turbolinks'
 gem 'mini_racer'
 
 # Servers
-gem 'unicorn'
-gem 'pg', '~>0.18'
+gem 'puma'
+gem 'pg', '~> 0.18'
 gem 'redis'
 gem 'rails_12factor', group: :production
 
