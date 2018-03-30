@@ -72,4 +72,12 @@ class User < ActiveRecord::Base
     end
   end
 
+  def first_name
+  	user.name.split(' ')[0] rescue ''
+  end
+
+  def last_name
+  	user.name.split(' ')[1] rescue ''
+  end
+
 end

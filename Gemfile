@@ -12,6 +12,7 @@ gem 'jquery-rails'
 gem 'sass-rails', '~> 4.0.3'
 gem 'bootstrap-sass', '~> 3.3.4'
 gem 'turbolinks'
+gem 'mini_racer'
 
 # Servers
 gem 'unicorn'
@@ -27,8 +28,6 @@ gem 'sidetiq'
 gem 'twitter'
 gem 'omniauth'
 gem 'omniauth-twitter'
-
-gem 'draper', '~> 1.3'
 
 # Admin
 gem 'activeadmin', '~> 1.0.0'
