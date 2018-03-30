@@ -40,16 +40,16 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :smtp
   ActionMailer::Base.smtp_settings = {
-    :address              => "smtp.mandrillapp.com",
-    :port                 => '587',
-    :user_name            => ENV['MANDRILL_USERNAME'],
-    :password             => ENV['MANDRILL_API_KEY'], # dev api key
-    :authentication       => :plain,
-    :domain               => 'followr.club',
+    address: 'smtp.mandrillapp.com',
+    port: '587',
+    user_name: ENV['MANDRILL_USERNAME'],
+    password: ENV['MANDRILL_API_KEY'], # dev api key
+    authentication: :plain,
+    domain: 'followr.club'
   }
 
   config.action_mailer.raise_delivery_errors = true
-  ActionMailer::Base.default :from => 'Followr <no-reply@followr.club>'
+  ActionMailer::Base.default from: 'Followr <no-reply@followr.club>'
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true

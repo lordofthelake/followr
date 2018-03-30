@@ -1,5 +1,5 @@
 class TwitterFollowPreferencesController < ApplicationController
-  before_action :set_twitter_follow_preference, only: [:edit, :update]
+  before_action :set_twitter_follow_preference, only: %i[edit update]
   before_action :auth_user
 
   # GET /twitter_follow_preferences/1/edit
@@ -22,17 +22,18 @@ class TwitterFollowPreferencesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_twitter_follow_preference
-      @twitter_follow_preference = current_user.twitter_follow_preference
-    end
 
-    def auth_user
-      redirect_to root_url if !current_user || current_user.twitter_follow_preference != @twitter_follow_preference
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_twitter_follow_preference
+    @twitter_follow_preference = current_user.twitter_follow_preference
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def twitter_follow_preference_params
-      params.require(:twitter_follow_preference).permit(:unfollow_after, :hashtags, :mass_follow, :mass_unfollow)
-    end
+  def auth_user
+    redirect_to root_url if !current_user || current_user.twitter_follow_preference != @twitter_follow_preference
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def twitter_follow_preference_params
+    params.require(:twitter_follow_preference).permit(:unfollow_after, :hashtags, :mass_follow, :mass_unfollow)
+  end
 end

@@ -4,7 +4,7 @@ ActiveAdmin.register User do
       User.find_by_id(params[:id])
     end
   end
-  
+
   filter :twitter_username
   filter :created_at
 
@@ -16,9 +16,14 @@ ActiveAdmin.register User do
     column (:twitter_username) { |u| link_to u.twitter_username, "https://twitter.com/#{u.twitter_username}", target: '_blank' }
     column :twitter_check?
     column (:hashtags) { |u| u.hashtags.join(',') }
-    column ('Followers Increase') { |u| u.followers.last.count - u.followers.first.count rescue nil }
+    column ('Followers Increase') do |u|
+      begin
+        u.followers.last.count - u.followers.first.count
+      rescue
+        nil
+      end
+    end
     column :created_at
     actions
   end
-
 end

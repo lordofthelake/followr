@@ -1,7 +1,6 @@
 class TwitterFollowsController < ApplicationController
-
   def index
-    redirect_to root_url and return if !current_user
+    redirect_to(root_url) && return unless current_user
     @twitter_follows = current_user.twitter_follows.recent
   end
 

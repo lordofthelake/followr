@@ -6,7 +6,7 @@ class TwitterFollowWorker
 
   def perform
     unless ENV['WORKERS_DRY_RUN'].blank?
-      puts "TwitterFollowWorker run but returning due to WORKERS_DRY_RUN env variable"
+      puts 'TwitterFollowWorker run but returning due to WORKERS_DRY_RUN env variable'
       return
     end
 
@@ -14,15 +14,19 @@ class TwitterFollowWorker
       group.each do |user|
         begin
           follow_prefs = user.twitter_follow_preference
-          hashtags = follow_prefs.hashtags.gsub('#','').gsub(' ','').split(',').shuffle
+          hashtags = follow_prefs.hashtags.delete('#').delete(' ').split(',').shuffle
 
-          client = user.credential.twitter_client rescue nil
+          client = begin
+                     user.credential.twitter_client
+                   rescue
+                     nil
+                   end
           next if client.nil?
 
           # Keep track of # of followers user has hourly
           Follower.compose(user) if Follower.can_compose_for?(user)
 
-          next if !user.twitter_check? || user.rate_limited? || !user.can_twitter_follow?          # usernames = []
+          next if !user.twitter_check? || user.rate_limited? || !user.can_twitter_follow? # usernames = []
 
           hashtags.each do |hashtag|
             tweets = client.search("##{hashtag}").collect.take(rand(20..300))
@@ -35,7 +39,7 @@ class TwitterFollowWorker
               entry = TwitterFollow.where(user: user, username: username)
               next if entry.present?
 
-              client.friendship_update(username, { :wants_retweets => false })
+              client.friendship_update(username, wants_retweets: false)
               muted = client.mute(username) # don't show their tweets in our feed
               followed = client.follow(username)
 
@@ -44,7 +48,11 @@ class TwitterFollowWorker
           end
         rescue Twitter::Error::TooManyRequests => e
           # rate limited - set rate_limit_until timestamp
-          sleep_time = (e.rate_limit.reset_in + 1.minute)/60 rescue 16
+          sleep_time = begin
+                         (e.rate_limit.reset_in + 1.minute) / 60
+                       rescue
+                         16
+                       end
           follow_prefs.rate_limit_until = DateTime.now + sleep_time.minutes
           follow_prefs.save
         rescue Twitter::Error::Forbidden => e

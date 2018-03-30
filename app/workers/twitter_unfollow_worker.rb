@@ -2,13 +2,13 @@ class TwitterUnfollowWorker
   include Sidekiq::Worker
   include Sidetiq::Schedulable
 
-  recurrence {
+  recurrence do
     daily.hour_of_day(0, 6, 7, 8, 22, 23)
-   }
+  end
 
   def perform
     unless ENV['WORKERS_DRY_RUN'].blank?
-      puts "TwitterUnfollowWorker run but returning due to WORKERS_DRY_RUN env variable"
+      puts 'TwitterUnfollowWorker run but returning due to WORKERS_DRY_RUN env variable'
       return
     end
 
@@ -18,8 +18,16 @@ class TwitterUnfollowWorker
         unfollow_days = follow_prefs.unfollow_after
         users_to_unfollow = user.twitter_follows.where('followed_at <= ? AND UNFOLLOWED IS NOT TRUE', unfollow_days.to_i.days.ago)
 
-        client = user.credential.twitter_client rescue nil
-        client_muted_ids = client.muted_ids.to_a rescue []
+        client = begin
+                   user.credential.twitter_client
+                 rescue
+                   nil
+                 end
+        client_muted_ids = begin
+                             client.muted_ids.to_a
+                           rescue
+                             []
+                           end
 
         next if client.nil? || users_to_unfollow.empty?
         next unless user.can_twitter_unfollow?
@@ -32,15 +40,13 @@ class TwitterUnfollowWorker
             next unless client_muted_ids.include?(twitter_user_id)
 
             if client.unfollow(twitter_user_id)
-              followed_user.update_attributes({ unfollowed: true, unfollowed_at: DateTime.now })
+              followed_user.update_attributes(unfollowed: true, unfollowed_at: DateTime.now)
               client.unmute(twitter_user_id)
-              retweets_on = client.friendship_update(twitter_user_id, { :wants_retweets => true })
+              retweets_on = client.friendship_update(twitter_user_id, wants_retweets: true)
             end
-
           rescue Twitter::Error::Forbidden => e
           rescue Twitter::Error::NotFound => e
-            followed_user.update_attributes({ unfollowed: true, unfollowed_at: DateTime.now })
-
+            followed_user.update_attributes(unfollowed: true, unfollowed_at: DateTime.now)
           end
         end
       end
