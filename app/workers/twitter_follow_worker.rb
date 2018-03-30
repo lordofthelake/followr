@@ -17,8 +17,8 @@ class TwitterFollowWorker
           hashtags = follow_prefs.hashtags.gsub('#','').gsub(' ','').split(',').shuffle
 
           client = user.credential.twitter_client rescue nil
-          next if client.nil? 
-          
+          next if client.nil?
+
           # Keep track of # of followers user has hourly
           Follower.compose(user) if Follower.can_compose_for?(user)
 
@@ -49,15 +49,12 @@ class TwitterFollowWorker
           follow_prefs.save
         rescue Twitter::Error::Forbidden => e
           if e.message.index('Application cannot perform write actions')
-            Airbrake.notify(e)
             user.credential.update_attributes(is_valid: false)
           end
         rescue Twitter::Error::Unauthorized => e
           # follow_prefs.update_attributes(mass_follow: false, mass_unfollow: false)
           user.credential.update_attributes(is_valid: false)
           puts "#{user.twitter_username} || #{e}"
-        rescue => e
-          Airbrake.notify(e)
         end
       end
     end

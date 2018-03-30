@@ -1,27 +1,23 @@
 class Follower < ActiveRecord::Base
-	
+
   belongs_to :user
 
 	def self.compose(user)
-		begin
-      client = user.credential.twitter_client rescue nil
-      followers_count = client.follower_ids.count rescue nil
+    client = user.credential.twitter_client rescue nil
+    followers_count = client.follower_ids.count rescue nil
 
-      return if client.nil? || followers_count.nil?
+    return if client.nil? || followers_count.nil?
 
-      followers = user.followers
+    followers = user.followers
 
-      options = {
-        :source => 'twitter',
-        :count => followers_count,
-        :user => user
-      }
+    options = {
+      :source => 'twitter',
+      :count => followers_count,
+      :user => user
+    }
 
-      followers << Follower.new(options)
+    followers << Follower.new(options)
 
-    rescue => e
-    	Airbrake.notify(e)
-    end
 	end
 
   def self.can_compose_for?(user)

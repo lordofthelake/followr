@@ -5,8 +5,6 @@ class UsersController < ApplicationController
       u = User.find current_user.id
       u.email = params[:user][:email].downcase
       u.save!
-    rescue => e
-      Airbrake.notify(e)
     ensure
       redirect_to dashboard_path
     end
@@ -21,7 +19,6 @@ class UsersController < ApplicationController
       end
 
     rescue => e
-      Airbrake.notify(e)
       render js: "alert('Oops! It seems that something went wrong :(')"
     end
   end

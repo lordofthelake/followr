@@ -2,10 +2,6 @@
   <fieldset>
     <legend>Preferences</legend>
 
-    <% if @twitter_follow_preference.errors.any? %>
-      <% Airbrake.notify(@twitter_follow_preference.errors.full_messages) %>
-    <% end %>
-
     <div class="form-group">
       <%= f.label :unfollow_after, "Days before unfollow", class: "col-sm-2 control-label" %>
       <div class="col-sm-10">

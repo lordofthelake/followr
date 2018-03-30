@@ -23,10 +23,6 @@ gem 'rails_12factor', group: :production
 gem 'sidekiq'
 gem 'sidetiq'
 
-# Monitoring
-gem 'newrelic_rpm'
-gem 'airbrake'
-
 # Twitter integration
 gem 'twitter'
 gem 'omniauth'
