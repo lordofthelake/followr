@@ -40,7 +40,7 @@ class TwitterFollowWorker
               next if entry.present?
 
               client.friendship_update(username, wants_retweets: false)
-              muted = client.mute(username) # don't show their tweets in our feed
+              client.mute(username) # don't show their tweets in our feed
               followed = client.follow(username)
 
               TwitterFollow.follow(user, username, hashtag, twitter_user_id) if followed

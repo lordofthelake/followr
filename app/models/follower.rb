@@ -32,7 +32,9 @@ class Follower < ActiveRecord::Base
                  rescue
                    nil
                  end
-    return false if last_entry.present? && last_entry.created_at.to_datetime.in_time_zone(Rails.application.config.time_zone).hour == DateTime.now.in_time_zone(Rails.application.config.time_zone).hour
+    return false if last_entry.present? &&
+                    last_entry.created_at.to_datetime.in_time_zone(Rails.application.config.time_zone).hour == \
+                    DateTime.now.in_time_zone(Rails.application.config.time_zone).hour
     true
   end
 end

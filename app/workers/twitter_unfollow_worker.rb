@@ -16,7 +16,8 @@ class TwitterUnfollowWorker
       group.each do |user|
         follow_prefs = user.twitter_follow_preference
         unfollow_days = follow_prefs.unfollow_after
-        users_to_unfollow = user.twitter_follows.where('followed_at <= ? AND UNFOLLOWED IS NOT TRUE', unfollow_days.to_i.days.ago)
+        users_to_unfollow = user.twitter_follows
+                                .where('followed_at <= ? AND UNFOLLOWED IS NOT TRUE', unfollow_days.to_i.days.ago)
 
         client = begin
                    user.credential.twitter_client
@@ -42,10 +43,9 @@ class TwitterUnfollowWorker
             if client.unfollow(twitter_user_id)
               followed_user.update_attributes(unfollowed: true, unfollowed_at: DateTime.now)
               client.unmute(twitter_user_id)
-              retweets_on = client.friendship_update(twitter_user_id, wants_retweets: true)
+              client.friendship_update(twitter_user_id, wants_retweets: true)
             end
-          rescue Twitter::Error::Forbidden => e
-          rescue Twitter::Error::NotFound => e
+          rescue Twitter::Error::NotFound
             followed_user.update_attributes(unfollowed: true, unfollowed_at: DateTime.now)
           end
         end

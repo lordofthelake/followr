@@ -23,19 +23,5 @@ class PagesController < ApplicationController
     # TODO: add percent difference
     @followed_users_count = current_user.twitter_follows.count
     @began_following_users = current_user.began_following_users
-
-    client = current_user.credential.twitter_client
-    unless Rails.cache.read('twitter_trending_hashtags').present?
-      Rails.cache.write('twitter_trending_hashtags', TwitterFollow.get_trending_hashtags(current_user.id))
-    end
-
-    trending = Rails.cache.read('twitter_trending_hashtags')
-    if trending.present?
-      @trending = []
-      trending.each do |hashtag|
-        @trending << "<a href='http://twitter.com/hashtag/#{hashtag}'>#{hashtag.sub('#', '')}</a>"
-      end
-      @trending = @trending.join(' | ')
-    end
   end
 end
