@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
-ruby '2.2.3'
+ruby '~> 2.3'
 
-gem 'rails', '4.2.1'
-gem 'sinatra', :require => nil
+gem 'rails', '~> 4.2.0'
+gem 'sinatra', require: false
 
 # Assets
 gem 'uglifier', '>= 1.3.0'
@@ -36,7 +36,7 @@ gem 'attr_encrypted'
 gem 'draper', '~> 1.3'
 
 # Admin
-gem 'activeadmin', '~> 1.0.0.pre1'
+gem 'activeadmin', '~> 1.0.0'
 gem 'devise'
 
 # Charting
@@ -44,7 +44,7 @@ gem 'groupdate'
 gem 'chartkick'
 
 # Debugging
-group :development, :test do 
+group :development, :test do
   gem 'byebug'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
