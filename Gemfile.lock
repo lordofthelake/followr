@@ -24,6 +24,8 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
+    active_admin-subnav (1.1.1)
+      activeadmin
     activeadmin (1.2.1)
       arbre (>= 1.1.1)
       coffee-rails
@@ -342,6 +344,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active_admin-subnav
   activeadmin (~> 1.0)
   better_errors
   binding_of_caller

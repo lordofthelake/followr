@@ -32,6 +32,7 @@ gem 'omniauth-twitter'
 gem 'twitter'
 
 # Admin
+gem 'active_admin-subnav'
 gem 'activeadmin', '~> 1.0'
 gem 'devise'
 
