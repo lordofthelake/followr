@@ -4,7 +4,7 @@ class TwitterFollowWorker
 
   SearchResult = Struct.new(:hashtag, :tweet)
 
-  recurrence { hourly.minute_of_hour(15, 30, 55) }
+  recurrence { hourly.minute_of_hour(0, 10, 20, 30, 40, 50) }
 
   def perform
     unless ENV['WORKERS_DRY_RUN'].blank?
@@ -14,6 +14,8 @@ class TwitterFollowWorker
 
     User.wants_twitter_follow.find_each do |user|
       begin
+        next if !user.twitter_check? || user.rate_limited? || !user.can_twitter_follow? # usernames = []
+
         follow_prefs = user.twitter_follow_preference
         hashtags = follow_prefs.hashtags.delete('#').delete(' ').split(',').shuffle
 
@@ -27,7 +29,6 @@ class TwitterFollowWorker
         # Keep track of # of followers user has hourly
         Follower.compose(user) if Follower.can_compose_for?(user)
 
-        next if !user.twitter_check? || user.rate_limited? || !user.can_twitter_follow? # usernames = []
 
         search_results = hashtags.flat_map do |hashtag|
           client.search("##{hashtag} exclude:replies exclude:retweets filter:safe",
