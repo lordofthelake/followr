@@ -5,14 +5,20 @@ class TwitterFollow < ActiveRecord::Base
 
   scope :recent, ->(limit = 200) { order('created_at desc').limit(limit) }
 
-  def self.follow(user, username, hashtag, twitter_user_id)
-    entry = TwitterFollow.new
-    entry.user_id = user.id
-    entry.username = username
-    entry.followed_at = DateTime.now
-    entry.hashtag = hashtag
-    entry.twitter_user_id = twitter_user_id
-    entry.save
+  def self.follow!(user, twitter_user, hashtag)
+    TwitterFollow.create!(
+      user: user,
+      username: twitter_user.screen_name.to_s,
+      followed_at: DateTime.now,
+      hashtag: hashtag,
+      twitter_user_id: twitter_user.twitter_user.id,
+      followers_count: twitter_user.followers_count,
+      following_count: twitter_user.following_count,
+      statuses_count: twitter_user.statuses_count,
+      favourites_count: twitter_user.favourites_count,
+      lang: twitter_user.lang,
+      description: twitter_user.description
+    )
   end
 
   def unfollow!
@@ -25,15 +31,5 @@ class TwitterFollow < ActiveRecord::Base
     client.unfollow(username)
     client.unmute(username)
     update_attributes!(unfollowed: true, unfollowed_at: DateTime.now)
-  end
-
-  def self.get_trending_hashtags(user_id)
-    unless Rails.cache.read('twitter_trending_hashtags').present?
-      user = User.find user_id
-      client = user.credential.twitter_client
-      trending = client.trends.map(&:name)
-      Rails.cache.write('twitter_trending_hashtags', trending, expires_in: 24.hours)
-    end
-    Rails.cache.read('twitter_trending_hashtags')
   end
 end

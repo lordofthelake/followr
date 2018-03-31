@@ -29,7 +29,6 @@ class TwitterFollowWorker
         # Keep track of # of followers user has hourly
         Follower.compose(user) if Follower.can_compose_for?(user)
 
-
         search_results = hashtags.flat_map do |hashtag|
           client.search("##{hashtag} exclude:replies exclude:retweets filter:safe",
                         result_type: 'recent', lang: 'en', count: 100)
@@ -44,7 +43,6 @@ class TwitterFollowWorker
 
           user_to_follow = tweet.user
           username = user_to_follow.screen_name.to_s
-          twitter_user_id = user_to_follow.id
 
           # Skip users without bio
           next if user_to_follow.default_profile? || user_to_follow.default_profile? || user_to_follow.protected?
@@ -56,7 +54,7 @@ class TwitterFollowWorker
           client.mute(username) # don't show their tweets in our feed
           followed = client.follow(username)
 
-          TwitterFollow.follow(user, username, hashtag, twitter_user_id) if followed
+          TwitterFollow.follow!(user, user_to_follow, hashtag) if followed
         end
       rescue Twitter::Error::TooManyRequests => e
         # rate limited - set rate_limit_until timestamp
@@ -65,8 +63,7 @@ class TwitterFollowWorker
                       rescue
                         16
                       end
-        follow_prefs.rate_limit_until = DateTime.now + sleep_time.minutes
-        follow_prefs.save
+        follow_prefs.update_attributes(rate_limit_until: DateTime.now + sleep_time.minutes)
       rescue Twitter::Error::Forbidden => e
         if e.message.index('Application cannot perform write actions')
           user.credential.update_attributes(is_valid: false)
