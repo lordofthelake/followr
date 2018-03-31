@@ -53,7 +53,8 @@ class User < ActiveRecord::Base
 
   def can_twitter_follow?
     return false unless credential.is_valid
-    return false if twitter_follow_preference.rate_limit_until > DateTime.now
+    return false if twitter_follow_preference.rate_limit_until.present? &&
+                    twitter_follow_preference.rate_limit_until > DateTime.now
 
     followed_in_last_hour = twitter_follows.where('followed_at > ?', 1.hour.ago)
     return false if followed_in_last_hour.count >= 50
