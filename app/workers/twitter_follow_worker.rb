@@ -30,7 +30,8 @@ class TwitterFollowWorker
         next if !user.twitter_check? || user.rate_limited? || !user.can_twitter_follow? # usernames = []
 
         search_results = hashtags.flat_map do |hashtag|
-          client.search("##{hashtag} exclude:replies exclude:retweets filter:safe")
+          client.search("##{hashtag} exclude:replies exclude:retweets filter:safe",
+                        result_type: 'recent', lang: 'en', count: 100)
                 .collect
                 .take(100)
                 .map { |tweet| SearchResult.new(hashtag, tweet) }
