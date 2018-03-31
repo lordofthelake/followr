@@ -1,10 +1,4 @@
 ActiveAdmin.register User do
-  controller do
-    def find_resource
-      User.find_by_id(params[:id])
-    end
-  end
-
   filter :twitter_username
   filter :created_at
 

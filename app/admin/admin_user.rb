@@ -1,10 +1,4 @@
 ActiveAdmin.register AdminUser do
-  controller do
-    def find_resource
-      AdminUser.find_by_id(params[:id])
-    end
-  end
-
   permit_params :email, :password, :password_confirmation
 
   index do
