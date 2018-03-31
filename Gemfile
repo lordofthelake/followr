@@ -44,6 +44,7 @@ gem 'groupdate'
 
 # Debugging
 group :development, :test do
+  gem 'listen'
   gem 'byebug'
 
   # Access an IRB console on exception pages or by using <%= console %> in views

@@ -164,6 +164,10 @@ GEM
       kaminari-core (= 1.1.1)
     kaminari-core (1.1.1)
     libv8 (6.3.292.48.1)
+    listen (3.1.5)
+      rb-fsevent (~> 0.9, >= 0.9.4)
+      rb-inotify (~> 0.9, >= 0.9.7)
+      ruby_dep (~> 1.2)
     loofah (2.2.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -260,6 +264,7 @@ GEM
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
+    ruby_dep (1.5.0)
     sass (3.5.6)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -347,6 +352,7 @@ DEPENDENCIES
   devise
   groupdate
   jquery-rails
+  listen
   mini_racer
   omniauth
   omniauth-twitter
