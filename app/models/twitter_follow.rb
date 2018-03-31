@@ -13,7 +13,7 @@ class TwitterFollow < ActiveRecord::Base
       hashtag: hashtag,
       twitter_user_id: twitter_user.id,
       followers_count: twitter_user.followers_count,
-      following_count: twitter_user.following_count,
+      following_count: twitter_user.friends_count,
       statuses_count: twitter_user.statuses_count,
       favourites_count: twitter_user.favourites_count,
       lang: twitter_user.lang,
