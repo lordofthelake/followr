@@ -11,7 +11,7 @@ class TwitterFollow < ActiveRecord::Base
       username: twitter_user.screen_name.to_s,
       followed_at: DateTime.now,
       hashtag: hashtag,
-      twitter_user_id: twitter_user.twitter_user.id,
+      twitter_user_id: twitter_user.id,
       followers_count: twitter_user.followers_count,
       following_count: twitter_user.following_count,
       statuses_count: twitter_user.statuses_count,
