@@ -30,7 +30,6 @@ gem 'twitter'
 gem 'active_admin-subnav'
 gem 'activeadmin', '~> 1.0'
 gem 'devise'
-gem 'formadmin'
 
 # Monitoring
 gem 'httplog'

@@ -103,8 +103,6 @@ GEM
     faraday (0.14.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.23)
-    formadmin (0.2.1)
-      activeadmin
     formtastic (3.1.5)
       actionpack (>= 3.2.13)
     formtastic_i18n (0.6.0)
@@ -327,7 +325,6 @@ DEPENDENCIES
   chartkick
   coffee-rails
   devise
-  formadmin
   groupdate
   httplog
   jquery-rails
