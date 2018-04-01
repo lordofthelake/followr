@@ -1,6 +1,6 @@
 namespace :twitter do
   task follow: :environment do
-    total_tweets_per_tick = 50
+    total_tweets_per_tick = 500
 
     User.wants_twitter_follow.find_each do |user|
       begin
