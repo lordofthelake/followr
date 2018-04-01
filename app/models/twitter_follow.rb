@@ -5,9 +5,10 @@ class TwitterFollow < ActiveRecord::Base
 
   scope :recent, ->(limit = 200) { order('created_at desc').limit(limit) }
 
-  def self.follow!(user, search_result, hashtag)
+  def self.follow!(user, search_result)
     origin_tweet = search_result.tweet
     twitter_user = search_result.user
+    hashtag = search_result.hashtag
 
     TwitterFollow.create!(
       user: user,
