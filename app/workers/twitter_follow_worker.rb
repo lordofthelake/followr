@@ -2,9 +2,11 @@ class TwitterFollowWorker
   include Sidekiq::Worker
   include Sidetiq::Schedulable
 
+  TOTAL_TWEETS_PER_TICK = 50
+
   SearchResult = Struct.new(:hashtag, :tweet)
 
-  recurrence { hourly.minute_of_hour(0, 10, 20, 30, 40, 50) }
+  recurrence { hourly.minute_of_hour(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55) }
 
   def perform
     unless ENV['WORKERS_DRY_RUN'].blank?
@@ -29,40 +31,51 @@ class TwitterFollowWorker
         # Keep track of # of followers user has hourly
         Follower.compose(user) if Follower.can_compose_for?(user)
 
-        search_results = hashtags.flat_map do |hashtag|
-          client.search("##{hashtag} exclude:replies exclude:retweets filter:safe",
-                        result_type: 'recent', lang: 'en', count: 100)
-                .collect
-                .take(100)
-                .map { |tweet| SearchResult.new(hashtag, tweet) }
-        end
+        tweets_per_hashtag = TOTAL_TWEETS_PER_TICK / hashtags.count
 
-        search_results.shuffle.each do |search_result|
-          tweet = search_result.tweet
-          hashtag = search_result.hashtag
+        hashtags
+          .flat_map do |hashtag|
+            client.search("##{hashtag} exclude:replies exclude:retweets filter:safe",
+                          result_type: 'recent', lang: 'en', count: tweets_per_hashtag)
+                  .collect
+                  .take(tweets_per_hashtag)
+                  .map { |tweet| SearchResult.new(hashtag, tweet) }
+          end
+          .delete_if do |search_result|
+            tweet = search_result.tweet
 
-          user_to_follow = tweet.user
-          username = user_to_follow.screen_name.to_s
+            user_to_follow = tweet.user
+            username = user_to_follow.screen_name.to_s
 
-          # Skip users without bio
-          next if user_to_follow.default_profile? || user_to_follow.default_profile? || user_to_follow.protected?
+            # Skip users without bio
+            user_to_follow.default_profile? ||
+              user_to_follow.default_profile? ||
+              user_to_follow.protected? ||
+              TwitterFollow.where(user: user, username: username).any?
+          end
+          .shuffle
+          .take(3)
+          .each do |search_result|
+            tweet = search_result.tweet
+            hashtag = search_result.hashtag
 
-          # dont follow people we previously have
-          next if TwitterFollow.where(user: user, username: username).any?
+            user_to_follow = tweet.user
+            username = user_to_follow.screen_name.to_s
 
-          client.friendship_update(username, wants_retweets: false)
-          client.mute(username) # don't show their tweets in our feed
-          followed = client.follow(username)
+            client.friendship_update(username, wants_retweets: false)
+            client.mute(username) # don't show their tweets in our feed
+            followed = client.follow(username)
 
-          TwitterFollow.follow!(user, user_to_follow, hashtag) if followed
-        end
+            TwitterFollow.follow!(user, user_to_follow, hashtag) if followed
+          end
       rescue Twitter::Error::TooManyRequests => e
         # rate limited - set rate_limit_until timestamp
-        sleep_time = begin
-                        (e.rate_limit.reset_in + 1.minute) / 60
-                      rescue
-                        16
-                      end
+        sleep_time =
+          begin
+            (e.rate_limit.reset_in + 1.minute) / 60
+          rescue
+            16
+          end
         follow_prefs.update_attributes(rate_limit_until: DateTime.now + sleep_time.minutes)
       rescue Twitter::Error::Forbidden => e
         if e.message.index('Application cannot perform write actions')
