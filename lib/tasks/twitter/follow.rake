@@ -45,7 +45,7 @@ namespace :twitter do
             twitter_user = search_result.user
             (1 - (twitter_user.followers_count / twitter_user.friends_count.to_f)).abs
           end
-          .take(3)
+          .take(6)
           .each do |search_result|
             username = search_result.user.screen_name.to_s
             tweet = search_result.tweet
