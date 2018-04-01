@@ -4,7 +4,7 @@ class TwitterFollowWorker
 
   TOTAL_TWEETS_PER_TICK = 50
 
-  SearchResult = Struct.new(:hashtag, :tweet)
+  SearchResult = Struct.new(:hashtag, :tweet, :user)
 
   recurrence { hourly.minute_of_hour(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55) }
 
@@ -39,36 +39,34 @@ class TwitterFollowWorker
                           result_type: 'recent', lang: 'en', count: tweets_per_hashtag)
                   .collect
                   .take(tweets_per_hashtag)
-                  .map { |tweet| SearchResult.new(hashtag, tweet) }
+                  .map { |tweet| SearchResult.new(hashtag, tweet, tweet.user) }
           end
           .uniq { |search_result| search_result.tweet.user.screen_name.to_s }
           .delete_if do |search_result|
-            tweet = search_result.tweet
-
-            user_to_follow = tweet.user
+            user_to_follow = search_result.user
             username = user_to_follow.screen_name.to_s
 
             # Skip users without bio
             user_to_follow.default_profile? ||
               user_to_follow.default_profile? ||
               user_to_follow.protected? ||
+              user_to_follow.friends_count.zero? ||
               TwitterFollow.where(user: user, username: username).any?
           end
-          .shuffle
+          .sort_by do |search_result|
+            twitter_user = search_result.user
+            (1 - (twitter_user.followers_count / twitter_user.friends_count.to_f)).abs
+          end
           .take(3)
           .each do |search_result|
-            tweet = search_result.tweet
-            hashtag = search_result.hashtag
+            username = search_result.user.screen_name.to_s
 
-            user_to_follow = tweet.user
-            username = user_to_follow.screen_name.to_s
-
-            client.favorite(tweet)
+            client.favorite(search_result.tweet)
             client.friendship_update(username, wants_retweets: false)
             client.mute(username) # don't show their tweets in our feed
             followed = client.follow(username)
 
-            TwitterFollow.follow!(user, tweet, hashtag) if followed
+            TwitterFollow.follow!(user, search_result) if followed
           end
       rescue Twitter::Error::TooManyRequests => e
         # rate limited - set rate_limit_until timestamp
