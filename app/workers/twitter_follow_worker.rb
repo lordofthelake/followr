@@ -41,7 +41,7 @@ class TwitterFollowWorker
                   .take(tweets_per_hashtag)
                   .map { |tweet| SearchResult.new(hashtag, tweet, tweet.user) }
           end
-          .uniq { |search_result| search_result.tweet.user.screen_name.to_s }
+          .uniq { |search_result| search_result.user.screen_name.to_s }
           .delete_if do |search_result|
             user_to_follow = search_result.user
             username = user_to_follow.screen_name.to_s
