@@ -5,7 +5,9 @@ class TwitterFollow < ActiveRecord::Base
 
   scope :recent, ->(limit = 200) { order('created_at desc').limit(limit) }
 
-  def self.follow!(user, twitter_user, hashtag)
+  def self.follow!(user, origin_tweet, hashtag)
+    twitter_user = origin_tweet.user
+
     TwitterFollow.create!(
       user: user,
       username: twitter_user.screen_name.to_s,
@@ -17,7 +19,9 @@ class TwitterFollow < ActiveRecord::Base
       statuses_count: twitter_user.statuses_count,
       favourites_count: twitter_user.favourites_count,
       lang: twitter_user.lang,
-      description: twitter_user.description
+      description: twitter_user.description,
+      source_tweet_text: origin_tweet.text,
+      source_tweet_uri: origin_tweet.uri
     )
   end
 

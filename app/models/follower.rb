@@ -18,7 +18,6 @@ class Follower < ActiveRecord::Base
     followers = user.followers
 
     options = {
-      source: 'twitter',
       count: followers_count,
       user: user
     }

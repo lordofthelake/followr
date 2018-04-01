@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180331115924) do
+ActiveRecord::Schema.define(version: 20180401100129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,7 +43,6 @@ ActiveRecord::Schema.define(version: 20180331115924) do
 
   create_table "followers", id: :serial, force: :cascade do |t|
     t.integer "user_id"
-    t.string "source"
     t.integer "count"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -71,6 +70,14 @@ ActiveRecord::Schema.define(version: 20180331115924) do
     t.string "hashtag"
     t.string "twitter_user_id"
     t.boolean "was_following"
+    t.integer "followers_count"
+    t.integer "following_count"
+    t.integer "statuses_count"
+    t.integer "favourites_count"
+    t.string "lang"
+    t.text "description"
+    t.string "source_tweet_uri"
+    t.text "source_tweet_text"
     t.index ["user_id"], name: "index_twitter_follows_on_user_id"
     t.index ["username"], name: "index_twitter_follows_on_username"
   end

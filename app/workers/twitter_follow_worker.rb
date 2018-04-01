@@ -66,7 +66,7 @@ class TwitterFollowWorker
             client.mute(username) # don't show their tweets in our feed
             followed = client.follow(username)
 
-            TwitterFollow.follow!(user, user_to_follow, hashtag) if followed
+            TwitterFollow.follow!(user, tweet, hashtag) if followed
           end
       rescue Twitter::Error::TooManyRequests => e
         # rate limited - set rate_limit_until timestamp
