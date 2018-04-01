@@ -60,8 +60,9 @@ class TwitterFollowWorker
           .take(3)
           .each do |search_result|
             username = search_result.user.screen_name.to_s
+            tweet = search_result.tweet
 
-            client.favorite(search_result.tweet)
+            client.favorite(tweet) if tweet.favorite_count.positive? || tweet.retweet_count.positive?
             client.friendship_update(username, wants_retweets: false)
             client.mute(username) # don't show their tweets in our feed
             followed = client.follow(username)
