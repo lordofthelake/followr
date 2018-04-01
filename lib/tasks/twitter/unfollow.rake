@@ -1,17 +1,5 @@
-class TwitterUnfollowWorker
-  include Sidekiq::Worker
-  include Sidetiq::Schedulable
-
-  recurrence do
-    daily.hour_of_day(0, 6, 7, 8, 22, 23)
-  end
-
-  def perform
-    unless ENV['WORKERS_DRY_RUN'].blank?
-      puts 'TwitterUnfollowWorker run but returning due to WORKERS_DRY_RUN env variable'
-      return
-    end
-
+namespace :twitter do
+  task unfollow: :environment do
     User.wants_twitter_unfollow.find_each do |user|
       follow_prefs = user.twitter_follow_preference
       unfollow_days = follow_prefs.unfollow_after

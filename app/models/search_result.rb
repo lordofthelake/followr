@@ -1,0 +1,1 @@
+SearchResult = Struct.new(:hashtag, :tweet, :user)

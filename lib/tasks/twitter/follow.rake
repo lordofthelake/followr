@@ -1,18 +1,6 @@
-class TwitterFollowWorker
-  include Sidekiq::Worker
-  include Sidetiq::Schedulable
-
-  TOTAL_TWEETS_PER_TICK = 50
-
-  SearchResult = Struct.new(:hashtag, :tweet, :user)
-
-  recurrence { hourly.minute_of_hour(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55) }
-
-  def perform
-    unless ENV['WORKERS_DRY_RUN'].blank?
-      puts 'TwitterFollowWorker run but returning due to WORKERS_DRY_RUN env variable'
-      return
-    end
+namespace :twitter do
+  task follow: :environment do
+    total_tweets_per_tick = 50
 
     User.wants_twitter_follow.find_each do |user|
       begin
@@ -31,7 +19,7 @@ class TwitterFollowWorker
         # Keep track of # of followers user has hourly
         Follower.compose(user) if Follower.can_compose_for?(user)
 
-        tweets_per_hashtag = TOTAL_TWEETS_PER_TICK / hashtags.count
+        tweets_per_hashtag = total_tweets_per_tick / hashtags.count
 
         hashtags
           .flat_map do |hashtag|
