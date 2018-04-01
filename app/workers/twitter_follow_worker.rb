@@ -62,6 +62,7 @@ class TwitterFollowWorker
             user_to_follow = tweet.user
             username = user_to_follow.screen_name.to_s
 
+            client.favorite(tweet)
             client.friendship_update(username, wants_retweets: false)
             client.mute(username) # don't show their tweets in our feed
             followed = client.follow(username)
