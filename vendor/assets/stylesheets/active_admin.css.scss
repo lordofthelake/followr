@@ -8,8 +8,9 @@
 // $sidebar-width: 242px;
 
 // Active Admin's got SASS!
-@import "active_admin/mixins";
-@import "active_admin/base";
+// @import "active_admin/mixins";
+// @import "active_admin/base";
+@import 'formadmin/formadmin';
 
 //= require active_admin/subnav
 
