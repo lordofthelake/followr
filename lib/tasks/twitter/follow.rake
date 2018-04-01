@@ -19,6 +19,9 @@ namespace :twitter do
         # Keep track of # of followers user has hourly
         Follower.compose(user) if Follower.can_compose_for?(user)
 
+        follower_ids = client.follower_ids.to_a
+        user.twitter_follows.where(twitter_user_id: follower_ids).update_all(was_following: true)
+
         tweets_per_hashtag = total_tweets_per_tick / hashtags.count
 
         hashtags
