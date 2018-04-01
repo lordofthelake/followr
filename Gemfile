@@ -20,7 +20,6 @@ gem 'uglifier'
 gem 'pg'
 gem 'puma'
 gem 'rails_12factor', group: :production
-gem 'redis'
 
 # Twitter integration
 gem 'omniauth'
