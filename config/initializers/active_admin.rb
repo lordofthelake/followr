@@ -182,9 +182,6 @@ ActiveAdmin.setup do |config|
   #
   config.namespace :admin do |admin|
     admin.build_menu :utility_navigation do |menu|
-      menu.add label: 'Sidekiq status',
-               url: Rails.application.routes.url_helpers.sidekiq_web_path,
-               html_options: { target: :blank }
       admin.add_logout_button_to_menu menu
     end
   end

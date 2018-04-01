@@ -22,10 +22,6 @@ gem 'puma'
 gem 'rails_12factor', group: :production
 gem 'redis'
 
-# Workers
-gem 'sidekiq'
-gem 'sidetiq'
-
 # Twitter integration
 gem 'omniauth'
 gem 'omniauth-twitter'
