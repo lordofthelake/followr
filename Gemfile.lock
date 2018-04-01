@@ -100,6 +100,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
+    colorize (0.8.1)
     columnize (0.9.0)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.1)
@@ -141,6 +142,9 @@ GEM
       domain_name (~> 0.5)
     http-form_data (2.1.0)
     http_parser.rb (0.6.0)
+    httplog (1.0.2)
+      colorize (~> 0.8)
+      rack (>= 1.0)
     i18n (1.0.0)
       concurrent-ruby (~> 1.0)
     ice_cube (0.14.0)
@@ -354,6 +358,7 @@ DEPENDENCIES
   coffee-rails
   devise
   groupdate
+  httplog
   jquery-rails
   listen
   mini_racer

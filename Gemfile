@@ -37,6 +37,7 @@ gem 'activeadmin', '~> 1.0'
 gem 'devise'
 
 # Monitoring
+gem 'httplog'
 gem 'sentry-raven'
 
 # Charting
@@ -45,12 +46,12 @@ gem 'groupdate'
 
 # Debugging
 group :development, :test do
-  gem 'listen'
-  gem 'byebug'
-
-  # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'byebug'
+
+  gem 'listen'
+
   gem 'web-console', '~> 2.0'
 
   gem 'pry-byebug', '~> 1.3.3'
