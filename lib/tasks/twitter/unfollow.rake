@@ -24,12 +24,16 @@ namespace :twitter do
       follower_ids = client.follower_ids.to_a
       user.twitter_follows.where(twitter_user_id: follower_ids).update_all(was_following: true)
 
+      puts "Going to unfollow #{users_to_unfollow.count} users.."
       users_to_unfollow.each do |followed_user|
         begin
           twitter_user_id = followed_user.twitter_user_id.to_i
 
           # don't unfollow people who the user has manually unmuted
-          next unless client_muted_ids.include?(twitter_user_id)
+          unless client_muted_ids.include?(twitter_user_id)
+            puts "Skipping #{twitter_user_id}, as it is not muted.."
+            next
+          end
 
           if client.unfollow(twitter_user_id)
             followed_user.update_attributes(unfollowed: true, unfollowed_at: DateTime.now)
