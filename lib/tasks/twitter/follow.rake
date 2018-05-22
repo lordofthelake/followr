@@ -73,10 +73,11 @@ namespace :twitter do
         if e.message.index('Application cannot perform write actions')
           user.credential.update_attributes(is_valid: false)
         end
+        raise e
       rescue Twitter::Error::Unauthorized => e
         # follow_prefs.update_attributes(mass_follow: false, mass_unfollow: false)
         user.credential.update_attributes(is_valid: false)
-        puts "#{user.twitter_username} || #{e}"
+        raise e
       end
     end
   end
