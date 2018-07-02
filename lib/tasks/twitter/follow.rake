@@ -70,13 +70,13 @@ namespace :twitter do
           end
         follow_prefs.update_attributes(rate_limit_until: DateTime.now + sleep_time.minutes)
       rescue Twitter::Error::Forbidden => e
-        if e.message.index('Application cannot perform write actions')
-          user.credential.update_attributes(is_valid: false)
-        end
+        # if e.message.index('Application cannot perform write actions')
+        #   user.credential.update_attributes(is_valid: false)
+        # end
         raise e
       rescue Twitter::Error::Unauthorized => e
         # follow_prefs.update_attributes(mass_follow: false, mass_unfollow: false)
-        user.credential.update_attributes(is_valid: false)
+        # user.credential.update_attributes(is_valid: false)
         raise e
       end
     end
